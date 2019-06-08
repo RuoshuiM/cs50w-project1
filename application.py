@@ -24,35 +24,74 @@ Session(app)
 engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
+# Goodread api: key: jQeENaVIOL2SRBFQ9ZQgw
+#               secret: A9nAVGwuyH0tVhGEs4DhShfPwe2UR30tvHXwuEODIVY
+
+# My Goodreads API key
+API_KEY = "jQeENaVIOL2SRBFQ9ZQgw"
+
 
 @app.route("/")
 def index():
     return render_template("index.html")
 
+# tesing api
 @app.route("/api")
 def api():
-    # Goodread api: key: jQeENaVIOL2SRBFQ9ZQgw
-    #               secret: A9nAVGwuyH0tVhGEs4DhShfPwe2UR30tvHXwuEODIVY
-    res = requests.get("https://www.goodreads.com/book/review_counts.json", params={"key": "jQeENaVIOL2SRBFQ9ZQgw", "isbns": "9780441172719,9780141439600"})
+    res = requests.get("https://www.goodreads.com/book/review_counts.json",
+                       params={"key": API_KEY, "isbns": "9780441172719,9780141439600"})
     print(res.json())
     print("Success!")
     return str(res.json())
 
+
 @app.route('/api/<string:isbn>')
 def book_info(isbn):
+    """API Access
+    
+    If users make a GET request to your website’s /api/<isbn> route, 
+    where <isbn> is an ISBN number, your website should return a JSON response 
+    containing the book’s title, author, publication date, ISBN number, review count, 
+    and average score. The resulting JSON should follow the format:
+    
+    {
+        "title": "Memory",
+        "author": "Doug Lloyd",
+        "year": 2015,
+        "isbn": "1632168146",
+        "review_count": 28,
+        "average_score": 5.0
+    }
+    
+    """
 
-    result = db.execute("""SELECT isbn, title, author, year FROM books WHERE isbn = :isbn""", {"isbn": str(isbn)})
+    error_msg = "No book with given isbn found"
 
-    book = result.fetchone()
+    result = db.execute(
+        """SELECT isbn, title, author, year FROM books WHERE isbn = :isbn""", {"isbn": str(isbn)})
 
-    if book is None:
-        return "isbn not found", 404
+    my_book = result.fetchone()
+
+    if my_book is None:
+        return error_msg, 404
+
+    res = requests.get("https://www.goodreads.com/book/review_counts.json", params={
+                       "key": API_KEY, "isbns": isbn})
+
+    if res.status_code in {404, 422}:
+        return error_msg, 404
+
+    json_data = json.loads(res.text)
+
+    book = json_data["books"][0]
 
     info = {
-        "title": book.title,
-        "author": book.author,
-        "isbn": book.isbn,
-        "year": int(book.year),
+        "title": my_book["title"],
+        "author": my_book["author"],
+        "isbn": my_book["isbn"],
+        "year": my_book["year"],
+        "review_count": book["reviews_count"],
+        "average_score": float(book["average_rating"])
     }
 
     return json.dumps(info)
