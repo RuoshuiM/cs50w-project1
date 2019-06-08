@@ -6,8 +6,8 @@ from flask import Flask, session, redirect, render_template, request
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-
 import requests
+import json
 
 app = Flask(__name__)
 
@@ -37,3 +37,22 @@ def api():
     print(res.json())
     print("Success!")
     return str(res.json())
+
+@app.route('/api/<string:isbn>')
+def book_info(isbn):
+
+    result = db.execute("""SELECT isbn, title, author, year FROM books WHERE isbn = :isbn""", {"isbn": str(isbn)})
+
+    book = result.fetchone()
+
+    if book is None:
+        return "isbn not found", 404
+
+    info = {
+        "title": book.title,
+        "author": book.author,
+        "isbn": book.isbn,
+        "year": int(book.year),
+    }
+
+    return json.dumps(info)
