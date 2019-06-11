@@ -78,7 +78,7 @@ def book_info(isbn):
     res = requests.get("https://www.goodreads.com/book/review_counts.json", params={
                        "key": API_KEY, "isbns": isbn})
 
-    if res.status_code in {404, 422}:
+    if res.status_code == 404 or res.status_code == 422:
         return error_msg, 404
 
     json_data = json.loads(res.text)
