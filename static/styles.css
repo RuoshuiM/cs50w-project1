@@ -31,7 +31,7 @@ main .form-control
     width: auto;
 }
 
-header
+header h1
 {
     /* center header */
     text-align: center;
