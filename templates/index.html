@@ -1,14 +1,26 @@
-{% extends "layout.html" %}
+<!-- Home Page -->
+{% extends "base.html" %}
 
-{% block title %} Welcome! {% endblock %}
+{% block base_title %}BAD Books{% endblock %}
 
 {% block header %}
-    <h1>Welcome</h1>
-{% endblock %}
 
-
-{% block main %}
-
+<h1>Welcome</h1>
 
 {% endblock %}
 
+{% block body %}
+<nav>
+
+</nav>
+<main class="container">
+    <div class="row">
+        <nav class="mx-auto">
+            <a class="navbar-brand logo">
+                <span class="red">B</span><span class="yellow">A</span><span class="blue">D</span> <span
+                    class="green">Books</span>
+            </a>
+        </nav>
+    </div>
+</main>
+{% endblock %}
