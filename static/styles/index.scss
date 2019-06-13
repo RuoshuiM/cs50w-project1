@@ -1,33 +1,45 @@
-nav .navbar-brand
-{
+html {
+    font-size: 2vw;
+}
+
+$GOLDEN: 61.803398875%;
+
+%rounded-corner {
+    border-radius: 50px;
+}
+
+nav .navbar-brand {
     /* size for brand */
     font-size: xx-large;
 }
 
 /* colors for brand */
+
 /* nav .navbar-brand  */
-span .blue
-{
+
+.blue {
     color: #537fbe;
 }
+
 /* nav .navbar-brand  */
-span .red
-{
+
+.red {
     color: #ea433b;
 }
+
 /* nav .navbar-brand  */
-span .yellow
-{
+
+.yellow {
     color: #f5b82e;
 }
+
 /* nav .navbar-brand  */
-span .green
-{
+
+.green {
     color: #2e944b;
 }
 
-main .form-control
-{
+main .form-control {
     /* center form controls */
     display: inline-block;
 
@@ -35,28 +47,37 @@ main .form-control
     width: auto;
 }
 
-.logo 
-{
-    font-size: 6rem;
+.logo {
+    font-size: 4rem;
 }
 
-header h1
-{
+header h1 {
     /* center header */
     text-align: center;
 }
 
-main
-{
+main {
     /* scroll horizontally as needed */
     overflow-x: auto;
 
     /* center contents */
     text-align: center;
-}
-
-main img
-{
+    
+    img {
     /* constrain images on small screens */
     max-width: 100%;
 }
+}
+
+form {
+    
+    #query {
+        @extend %rounded-corner; 
+        width: $GOLDEN;
+    }
+    
+    button {
+        @extend %rounded-corner;
+    }
+}
+
