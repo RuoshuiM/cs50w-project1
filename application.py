@@ -48,35 +48,59 @@ def dated_url_for(endpoint, **values):
 def index():
     """Home page"""
     
-    return render_template("index.html", logged_in = session["user_id"] is None)
+    return render_template("index.html", logged_in = session.get("user_id") is None)
     
-@app.route("/login", methods=["GET, POST"])
+@app.route("/login", methods=["GET", "POST"])
 def login():
     """Logs in a user or return login page"""
     
+    # Log user out if already logged in
+    if logged_in():
+        session.pop('user_id')
+    
     if request.method == "POST":
-        username = request.form.get("username")
-        password = request.form.get("password")
+        # On POST, try to log user in
         
-        # Username and password will be provided, checked by js on client side
-        # But still check here in case
-        if not (username and password):
+        try:
+            username = request.form.get("username")
+            password = request.form.get("password")
+        except:
+            # Username and password will be provided, checked by js on client side
+            # But still check here in case
             flash("Must provide a username and password")
             return render_template("login.html"), 403
-        
+            
         # Query database for username
-        rows = db.execute("SELECT * FROM users WHERE username = :username",
-                          username=request.form.get("username")).fetchall()
-
-        # Ensure username exists and password is correct
-        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], password):
-            flash("Invalid username and/or password")
-            return render_template("login.html"), 403
-
-    else:
+        user_data = db.execute("SELECT id, username, passhash FROM users WHERE username = :username",
+                          username=username).fetchall()
         
+        
+        has_error, message = False, ""
+        
+        # Ensure username exists
+        if len(user_data) != 1:
+            has_error, message = True, "Invalid username"
+            
+        else:
+            # Extract user_id, username, password from database
+            user_id, db_username, db_password = user_data[0]
+            
+            #  Check password
+            if not check_password_hash(db_password, password):
+                has_error, message = True, "Invalid password"
+            
+        if has_error:
+            flash(message)
+            return render_template(url_for('login', next=redirect_url(home=False))), 403
+        else:
+            session["user_id"] = user_id
+            return redirect(url_for(redirect_url()))
+        
+    else:
+        # On GET, return login page
+        
+        return render_template("login.html")
     
-    return "TODO"
 
 @app.route("/register")
 def register():
@@ -86,6 +110,20 @@ def register():
 def book(id):
     return "TODO"
     
+@app.route("/search")
+def search():
+    query = request.args.get('q')
+    
+    if query is None:
+        return render_template(url_for('search'))
+    
+    # Keep track of matching books
+    results = []
+    
+    # TODO: add search functionality
+    
+    
+    return render_template('search.html', books=results)
 
 # # tesing api
 # @app.route("/api")
@@ -147,3 +185,16 @@ def book_info(isbn):
     }
 
     return json.dumps(info)
+
+def redirect_url(home=True):
+    """Returns redirect url
+    
+    home: whether url should default to homepage
+    """
+    
+    return request.args.get('next') or \
+       request.referrer or \
+       (url_for('index') if home else None)
+       
+def logged_in():
+    return session.get('user_id') is not None
