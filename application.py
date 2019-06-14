@@ -8,6 +8,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 import requests
 import json
+from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 
@@ -34,7 +35,6 @@ API_KEY = "jQeENaVIOL2SRBFQ9ZQgw"
 @app.context_processor
 def override_url_for():
     return dict(url_for=dated_url_for)
-
 def dated_url_for(endpoint, **values):
     if endpoint == 'static':
         filename = values.get('filename', None)
@@ -44,19 +44,57 @@ def dated_url_for(endpoint, **values):
             values['q'] = int(os.stat(file_path).st_mtime)
     return url_for(endpoint, **values)
 
-
 @app.route("/")
 def index():
-    return render_template("index.html")
+    """Home page"""
+    
+    return render_template("index.html", logged_in = session["user_id"] is None)
+    
+@app.route("/login", methods=["GET, POST"])
+def login():
+    """Logs in a user or return login page"""
+    
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        
+        # Username and password will be provided, checked by js on client side
+        # But still check here in case
+        if not (username and password):
+            flash("Must provide a username and password")
+            return render_template("login.html"), 403
+        
+        # Query database for username
+        rows = db.execute("SELECT * FROM users WHERE username = :username",
+                          username=request.form.get("username")).fetchall()
 
-# tesing api
-@app.route("/api")
-def api():
-    res = requests.get("https://www.goodreads.com/book/review_counts.json",
-                       params={"key": API_KEY, "isbns": "9780441172719,9780141439600"})
-    print(res.json())
-    print("Success!")
-    return str(res.json())
+        # Ensure username exists and password is correct
+        if len(rows) != 1 or not check_password_hash(rows[0]["hash"], password):
+            flash("Invalid username and/or password")
+            return render_template("login.html"), 403
+
+    else:
+        
+    
+    return "TODO"
+
+@app.route("/register")
+def register():
+    return "TODO"
+    
+@app.route("/book/<int:id>")
+def book(id):
+    return "TODO"
+    
+
+# # tesing api
+# @app.route("/api")
+# def api():
+#     res = requests.get("https://www.goodreads.com/book/review_counts.json",
+#                       params={"key": API_KEY, "isbns": "9780441172719,9780141439600"})
+#     print(res.json())
+#     print("Success!")
+#     return str(res.json())
 
 
 @app.route('/api/<string:isbn>')

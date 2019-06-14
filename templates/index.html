@@ -5,25 +5,27 @@
 
 {% endblock %} {% block body %}
 <nav class="navbar navbar-expanded justify-content-end">
-        
-        <a class="nav-link" href="/login">LOGIN</a>
+
+    <a class="nav-link" href="/login">LOGIN</a>
 </nav>
 
 <main class="container">
-        <div class="row">
-            <div class="mx-auto">
-                <h1 class="logo">
-                    <span class="red">B</span><span class="yellow">A</span><span class="blue">D</span> <span class="green">Books</span>
-                </h1>
-            </div>
+    <div class="row">
+        <div class="mx-auto my-3">
+            <h1 class="logo">
+                <span class="red">B</span><span class="yellow">A</span><span class="blue">D</span> <span class="green">Books</span>
+            </h1>
         </div>
-        <form>
-            <div class="form-group">
-                <input type="text" class="form-control rounded-pill" name="q" id="query" placeholder="Search BAD Books">
-            </div>
+    </div>
+    <form action="/search" method="get">
+        <div class="form-group my-3">
+            <input type="text" class="form-control rounded-pill" name="q" id="query" placeholder="Search BAD Books">
+        </div>
+        <div class="mx-auto my-5">
             <button class="btn btn-secondary" type="submit">Search</button>
-            <button class="btn btn-secondary">Feeling Lucky</button>
-        </form>
+            <button class="btn btn-secondary">Feeling BAD</button>
+        </div>
+    </form>
 
 </main>
 {% endblock %}
