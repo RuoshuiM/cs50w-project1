@@ -1,5 +1,5 @@
 html {
-  font-size: 2vw; }
+  font-size: 1.5vw; }
 
 form #query, form button {
   border-radius: 50px; }
@@ -7,6 +7,9 @@ form #query, form button {
 nav .navbar-brand {
   /* size for brand */
   font-size: xx-large; }
+
+a.nav_link:hover {
+  text-decoration: underline; }
 
 /* colors for brand */
 /* nav .navbar-brand  */
@@ -32,7 +35,8 @@ main .form-control {
   width: auto; }
 
 .logo {
-  font-size: 4rem; }
+  font-size: 4rem;
+  margin-top: 2rem; }
 
 header h1 {
   /* center header */
