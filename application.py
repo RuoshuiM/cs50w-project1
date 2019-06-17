@@ -1,12 +1,12 @@
 import os
 
 # env FLASK_APP=application.py FLASK_ENV=development FLASK_DEBUG=1 DATABASE_URL=postgres://jgiduehaaiifrf:c8f46939b0036d5279517bd6e058b003814d303246b41a14eab3b0a066331453@ec2-50-19-127-115.compute-1.amazonaws.com:5432/d4jthl04loj6n1 flask run
+# Local database: postgresql://postgres:postgres@localhost:5432/project1
 
 from flask import Flask, flash, session, redirect, render_template, request, url_for
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
-import requests
 import json
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -22,8 +22,8 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Set up database
-# engine = create_engine(os.getenv("DATABASE_URL"))
-engine = create_engine("postgres://jgiduehaaiifrf:c8f46939b0036d5279517bd6e058b003814d303246b41a14eab3b0a066331453@ec2-50-19-127-115.compute-1.amazonaws.com:5432/d4jthl04loj6n1")
+engine = create_engine(os.getenv("DATABASE_URL"))
+# engine = create_engine("postgres://jgiduehaaiifrf:c8f46939b0036d5279517bd6e058b003814d303246b41a14eab3b0a066331453@ec2-50-19-127-115.compute-1.amazonaws.com:5432/d4jthl04loj6n1")
 db = scoped_session(sessionmaker(bind=engine))
 
 # Goodread api: key: jQeENaVIOL2SRBFQ9ZQgw
@@ -97,7 +97,7 @@ def login():
         else:
             session['user_id'] = user_id
             session['username'] = username
-            return redirect(url_for(redirect_url()))
+            return redirect(url_for('index'))
         
     else:
         # On GET, return login page
@@ -136,6 +136,8 @@ def register():
                 'username': username, 
                 'passhash': generate_password_hash(password)
             })
+        
+        db.commit()
         
         print(f"{username}: {password}")
         flash("Registered!")
