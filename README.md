@@ -5,16 +5,25 @@ Web Programming with Python and JavaScript
 ## Todo:
 
 Backend
-- login
-- logout
-- user registration
+- delete account
+    - should reviews be deleted?
 - book search
 - add reviews
 - calculate ratings
 
 Frontend
-- Login page
-- registration page
+- delete account
+    - use js for modal
 - search page
 - book detail page
     - reviews for books
+
+Done:
+- login
+- logout
+- user registration
+- change password
+
+
+Errors to be careful about (Which I spent hours to debug):
+- Commit! Commit! Commit! Commit everytime modifying database (INSERT, UPDATE, DELETE)
