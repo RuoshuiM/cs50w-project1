@@ -33,6 +33,9 @@ def create():
 def get(sql):
     result = db.execute(sql)
     return result.fetchall()
+    
+def do(sql):
+    db.execute(sql)
 
 # def drop(table):
 #     db.execute("DROP TABLE users")
@@ -45,6 +48,8 @@ if __name__ == "__main__":
         print(get(argv[2]))
     elif argv[1] == "create":
         create()
+    elif argv[1] == "do":
+        do(argv[2])
     # elif argv[1] == "drop":
     #     drop(argv[2])
     else:
