@@ -1,5 +1,48 @@
-{% extends "layout_manage" %}
+{% extends "layout_manage.html" %}
 
 {% block title %}
-    Account
+Account
+{% endblock %}
+
+{% block main %}
+
+<section class="mb-5">
+    <h1>Account Settings</h1>
+    <hr>
+    <div class="row mx-auto form-group">
+        <label for="username" class="col-sm-2 col-form-label">Username</label>
+        <div class="col-sm-10">
+            <input type="text" name="username" id="username" class="form-control w-100" value={{username}} readonly>
+        </div>
+    </div>
+</section>
+
+<section class="my-5">
+    <h2>Change password</h2>
+    <hr>
+    <form action="/reset_password" method="post">
+        <div class="row form-group">
+            <!-- <label for="oldPassword" class="col-sm-2 col-form-label">Reset Password</label> -->
+            <!-- <div class="col-sm-10"> -->
+            <input type="password" name="old" class="form-control d-block w-100 my-2" placeholder="Old Password" required>
+            <input type="password" name="new" class="form-control d-block w-100 my-2" placeholder="New Password" required>
+            <input type="password" name="repeat_new" class="form-control d-block w-100 my-2"
+                placeholder="New Password (Again)" required>
+            <button type="submit" class="btn btn-primary w-100 my-2">Change</button>
+            <!-- </div> -->
+        </div>
+    </form>
+</section>
+
+<section class="my-5">
+    <h2 class="text-danger">Danger Zone</h2>
+    <hr>
+    <form action="/delete_account" method="post">
+        <div class="row form-group">
+            <button type="submit" class="btn btn-danger w-100 my-2">
+                DELETE ACCOUNT
+            </button>
+        </div>
+    </form>
+</section>
 {% endblock %}
