@@ -7,8 +7,10 @@ from flask import Flask, flash, session, redirect, render_template, request, url
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+import requests
 import json
 from werkzeug.security import check_password_hash, generate_password_hash
+from helper import login_required, logged_in, redirect_url
 
 app = Flask(__name__)
 
@@ -104,6 +106,19 @@ def login():
         
         return render_template("login.html")
     
+@app.route('/logout')
+def logout():
+    """Log out the user"""
+
+    session.clear()
+    return redirect(url_for('index'))
+
+@app.route('/account')
+@login_required
+def account():
+    """Account setting magagenment"""
+
+    return render_template('account.html', username=session["username"])
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -138,8 +153,7 @@ def register():
             })
         
         db.commit()
-        
-        print(f"{username}: {password}")
+
         flash("Registered!")
         return redirect(url_for('index'))
         
@@ -228,16 +242,3 @@ def book_info(isbn):
     }
 
     return json.dumps(info)
-
-def redirect_url(home=True):
-    """Returns redirect url
-    
-    home: whether url should default to homepage
-    """
-    
-    return request.args.get('next') or \
-       request.referrer or \
-       url_for('index')
-       
-def logged_in():
-    return session.get('user_id') is not None
