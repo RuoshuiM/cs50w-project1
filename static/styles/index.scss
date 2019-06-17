@@ -1,5 +1,5 @@
 html {
-    font-size: 1.5vw;
+    // font-size: 1.5vw;
 }
 
 $GOLDEN: 61.803398875%;
@@ -13,12 +13,22 @@ nav .navbar-brand {
     font-size: xx-large;
 }
 
+// Menu used to be out of view. This fixes the issue with right alignemnt
+// https://stackoverflow.com/a/49383596
+.navbar .dropdown-menu-right { 
+    right: 0; 
+    left: auto; 
+}
+
+.dropdown-menu.show {
+    position: absolute;
+}
+
 a.nav_link:hover {
     text-decoration: underline;
 }
 
 /* colors for brand */
-
 /* nav .navbar-brand  */
 
 .blue {
@@ -26,19 +36,16 @@ a.nav_link:hover {
 }
 
 /* nav .navbar-brand  */
-
 .red {
     color: #ea433b;
 }
 
 /* nav .navbar-brand  */
-
 .yellow {
     color: #f5b82e;
 }
 
 /* nav .navbar-brand  */
-
 .green {
     color: #2e944b;
 }

@@ -1,1 +1,19 @@
 <!-- Registration page -->
+{% extends "layout_manage.html" %} {% block main %}
+
+<h1>Register</h1>
+<br>
+<form action="/register" method="post">
+
+    <div class="form-group">
+        <input autocomplete="off" autofocus class="form-control" name="username" placeholder="Username" type="text" required/>
+    </div>
+    <div class="form-group">
+        <input class="form-control" name="password" placeholder="Password" type="password" required/>
+    </div>
+    <div class="form-group">
+        <input class="form-control" name="repeat_password" placeholder="Password (again)" type="password" required/>
+    </div>
+    <button class="btn btn-secondary" type="submit">Create Account</button>
+</form>
+{% endblock %}

@@ -2,7 +2,7 @@ import os
 
 # env FLASK_APP=application.py FLASK_ENV=development FLASK_DEBUG=1 DATABASE_URL=postgres://jgiduehaaiifrf:c8f46939b0036d5279517bd6e058b003814d303246b41a14eab3b0a066331453@ec2-50-19-127-115.compute-1.amazonaws.com:5432/d4jthl04loj6n1 flask run
 
-from flask import Flask, session, redirect, render_template, request, url_for
+from flask import Flask, flash, session, redirect, render_template, request, url_for
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -22,7 +22,8 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Set up database
-engine = create_engine(os.getenv("DATABASE_URL"))
+# engine = create_engine(os.getenv("DATABASE_URL"))
+engine = create_engine("postgres://jgiduehaaiifrf:c8f46939b0036d5279517bd6e058b003814d303246b41a14eab3b0a066331453@ec2-50-19-127-115.compute-1.amazonaws.com:5432/d4jthl04loj6n1")
 db = scoped_session(sessionmaker(bind=engine))
 
 # Goodread api: key: jQeENaVIOL2SRBFQ9ZQgw
@@ -48,7 +49,7 @@ def dated_url_for(endpoint, **values):
 def index():
     """Home page"""
     
-    return render_template("index.html", logged_in = session.get("user_id") is None)
+    return render_template("index.html")
     
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -61,6 +62,8 @@ def login():
     if request.method == "POST":
         # On POST, try to log user in
         
+        next_page = request.args.get("next")
+        
         try:
             username = request.form.get("username")
             password = request.form.get("password")
@@ -71,8 +74,7 @@ def login():
             return render_template("login.html"), 403
             
         # Query database for username
-        user_data = db.execute("SELECT id, username, passhash FROM users WHERE username = :username",
-                          username=username).fetchall()
+        user_data = db.execute("SELECT id, username, passhash FROM users WHERE username = :username", {'username': username}).fetchall()
         
         
         has_error, message = False, ""
@@ -91,9 +93,10 @@ def login():
             
         if has_error:
             flash(message)
-            return render_template(url_for('login', next=redirect_url(home=False))), 403
+            return render_template('login.html', next=next_page), 403
         else:
-            session["user_id"] = user_id
+            session['user_id'] = user_id
+            session['username'] = username
             return redirect(url_for(redirect_url()))
         
     else:
@@ -102,9 +105,46 @@ def login():
         return render_template("login.html")
     
 
-@app.route("/register")
+@app.route("/register", methods=["GET", "POST"])
 def register():
-    return "TODO"
+    """Register user"""
+    
+    if request.method == "POST":
+        # On POST, register user based on form
+        try:
+            username = request.form.get("username")
+            password = request.form.get("password")
+            repeat = request.form.get("repeat_password")
+        except:
+            # Username, password, and other fields will be provided, checked by js on client side
+            # But still check here in case
+            flash("Must fill in all fields")
+            return render_template('register.html'), 403
+        
+        # Check if user already exists
+        (count,) = db.execute("SELECT COUNT(*) FROM users WHERE username = :username", {'username': username}).fetchone()
+        if int(count) != 0:
+            flash("Username already taken")
+            return render_template('register.html'), 403
+        
+        if not repeat == password:
+            flash("Passwords must match")
+            return render_template('register.html'), 403
+        
+        db.execute("INSERT INTO users (username, passhash) VALUES (:username, :passhash)", 
+            {
+                'username': username, 
+                'passhash': generate_password_hash(password)
+            })
+        
+        print(f"{username}: {password}")
+        flash("Registered!")
+        return redirect(url_for('index'))
+        
+    else:
+        # On GET, return registration page
+    
+        return render_template('register.html')
     
 @app.route("/book/<int:id>")
 def book(id):
@@ -115,7 +155,8 @@ def search():
     query = request.args.get('q')
     
     if query is None:
-        return render_template(url_for('search'))
+        flash('Enter search keyword')
+        return render_template('search.html')
     
     # Keep track of matching books
     results = []
@@ -137,7 +178,7 @@ def search():
 
 @app.route('/api/<string:isbn>')
 def book_info(isbn):
-    """API Access
+    """API access for this site
     
     If users make a GET request to your website’s /api/<isbn> route, 
     where <isbn> is an ISBN number, your website should return a JSON response 
@@ -155,7 +196,7 @@ def book_info(isbn):
     
     """
 
-    error_msg = "No book with given isbn found"
+    error_msg = "No book with given isbn is found"
 
     result = db.execute(
         """SELECT isbn, title, author, year FROM books WHERE isbn = :isbn""", {"isbn": str(isbn)})
@@ -194,7 +235,7 @@ def redirect_url(home=True):
     
     return request.args.get('next') or \
        request.referrer or \
-       (url_for('index') if home else None)
+       url_for('index')
        
 def logged_in():
     return session.get('user_id') is not None

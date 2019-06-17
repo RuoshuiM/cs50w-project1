@@ -1,12 +1,16 @@
-html {
-  font-size: 1.5vw; }
-
 form #query, form button {
   border-radius: 50px; }
 
 nav .navbar-brand {
   /* size for brand */
   font-size: xx-large; }
+
+.navbar .dropdown-menu-right {
+  right: 0;
+  left: auto; }
+
+.dropdown-menu.show {
+  position: absolute; }
 
 a.nav_link:hover {
   text-decoration: underline; }

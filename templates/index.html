@@ -3,11 +3,39 @@
 
 <h1>Welcome</h1>
 
-{% endblock %} {% block body %}
-<nav class="navbar navbar-expanded justify-content-end">
+{% endblock %} 
 
-    <a class="nav-link" href="/login">LOGIN</a>
+{% block body %}
+
+<header>
+    {% if get_flashed_messages() %}
+        <div class="alert alert-primary border text-center" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button> {{ get_flashed_messages() | join(" ") }}
+        </div>
+    {% endif %} 
+    <nav class="navbar justify-content-end navbar-light">
+    <ul class="navbar-nav">
+        {% if session.user_id %}
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" data-display="static" aria-haspopup="true" aria-expanded="false">
+              My Account
+            </a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" href="/change_password">Change Password</a>
+                <a class="dropdown-item" href="/delete_account">Delete Account</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/logout">Log Out</a>
+            </div>
+        </li>
+        {% else %}
+        <a class="nav-link" href="/login">Log In</a> 
+        {% endif %}
+        
+    </ul>
 </nav>
+</header>
 
 <main class="container">
     <div class="row">
@@ -19,13 +47,14 @@
     </div>
     <form action="/search" method="get">
         <div class="form-group my-3">
-            <input type="text" class="form-control rounded-pill" name="q" id="query" placeholder="Search BAD Books">
+            <input type="text" class="form-control rounded-pill" name="q" id="query" placeholder="Search BAD Books" autofocus required>
         </div>
         <div class="mx-auto my-5">
-            <button class="btn btn-secondary" type="submit">Search</button>
-            <button class="btn btn-secondary">Feeling BAD</button>
+            <button class="btn btn-secondary mx-3" type="submit">Search</button>
+            <button class="btn btn-secondary mx-3" type="button">Feeling BAD</button>
         </div>
     </form>
+    
 
 </main>
 {% endblock %}
