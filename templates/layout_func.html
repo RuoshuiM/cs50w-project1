@@ -1,13 +1,14 @@
 {% extends "base.html" %}
 
 {% block base_title %}
-  BAD Books: {% block title %}{% endblock %}
+BAD Books: {% block title %}{% endblock %}
 {% endblock %}
 
 
 {% block body %}
 
-  <nav class="navbar navbar-expand-md navbar-light bg-light border">
+<header>
+  <nav class="navbar navbar-expand-md navbar-light border">
     <a class="navbar-brand" href="/">
       <span class="red">B</span><span class="yellow">A</span><span class="blue">D</span>
       <span class="green">Books</span>
@@ -18,12 +19,12 @@
     </button>
     <div class="collapse navbar-collapse" id="navbar">
       {% if session.user_id %}
-      <ul class="navbar-nav mr-auto mt-2">
+      <!-- <ul class="navbar-nav mr-auto mt-2">
         <li class="nav-item"><a class="nav-link" href="/quote">Quote</a></li>
-        <!-- <li class="nav-item"><a class="nav-link" href="/buy">Buy</a></li>
+        <li class="nav-item"><a class="nav-link" href="/buy">Buy</a></li>
         <li class="nav-item"><a class="nav-link" href="/sell">Sell</a></li>
-        <li class="nav-item"><a class="nav-link" href="/history">History</a></li> -->
-      </ul>
+        <li class="nav-item"><a class="nav-link" href="/history">History</a></li>
+      </ul> -->
       <ul class="navbar-nav ml-auto mt-2">
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
@@ -31,28 +32,24 @@
             My Account
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="/change_password">Change Password</a>
-            <a class="dropdown-item" href="/delete_account">Delete Account</a>
+            <a class="dropdown-item" href="{{url_for('account', next=request.url)}}">Account Settings</a>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="/logout">Log Out</a>
+            <a class="dropdown-item" href="{{url_for('logout', next=request.url)}}">Log Out</a>
           </div>
         </li>
-        <li class="nav-item"><a class="nav-link" href="/logout">Log Out</a></li>
       </ul>
       {% else %}
       <ul class="navbar-nav ml-auto mt-2">
-        <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
-        <li class="nav-item"><a class="nav-link" href="/login">Log In</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{url_for('login', next=request.url)}}">Log In</a></li>
       </ul>
       {% endif %}
     </div>
   </nav>
 
-  <header>
-    {% block header %} {% endblock %}
-  </header>
-  <main>
-    {% block main %} {% endblock %}
-  </main>
+  {% block header %} {% endblock %}
+</header>
+<main>
+  {% block main %} {% endblock %}
+</main>
 
 {% endblock %}

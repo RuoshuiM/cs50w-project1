@@ -68,7 +68,7 @@ def login():
     if request.method == "POST":
         # On POST, try to log user in
 
-        next_page = request.args.get("next")
+        next_page = redirect_url()
 
         try:
             username = request.form.get("username")
@@ -99,16 +99,20 @@ def login():
 
         if has_error:
             flash(message)
-            return render_template('login.html', next=next_page), 403
+            # return render_template('login.html', next=next_page), 403
+            return redirect(url_for('login', next=next_page))
         else:
             session['user_id'] = user_id
             session['username'] = username
-            return redirect(url_for('index'))
+            return redirect(next_page)
 
     else:
         # On GET, return login page
 
+        print("Referrer:", request.referrer)
+        print("Redirect:", redirect_url())
         return render_template("login.html")
+        
 
 
 @app.route('/logout')
@@ -131,7 +135,7 @@ def account():
 @login_required
 def change_password():
     msg, err = "", False
-    next_page = request.args.get("next")
+    next_page = redirect_url()
 
     try:
         old = request.form.get("old")
