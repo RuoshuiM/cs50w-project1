@@ -87,7 +87,7 @@ def login():
 
         # Ensure username exists
         if len(user_data) != 1:
-            has_error, message = True, "Invalid username"
+            has_error, message = True, "Username not found"
 
         else:
             # Extract user_id, username, password from database
@@ -147,6 +147,9 @@ def change_password():
     elif not new:
         err = True
         msg = "Must provide new password"
+    elif new == old:
+        err = True
+        msg = "New password cannot be the same as the old one"
     elif not new == repeat_new:
         err = True
         msg = "New password and repeat password don't match"
@@ -160,7 +163,7 @@ def change_password():
 
     if err:
         flash(msg)
-        return render_template("account.html", next=next_page, err=err), 400
+        return render_template("account.html", next=next_page, err=err, username=session["username"]), 400
 
     db.execute("UPDATE users SET passhash=:new_hash WHERE id=:user_id",
                {'new_hash': generate_password_hash(new),
