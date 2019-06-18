@@ -6,7 +6,7 @@
 
 {% block body %}
 <header>
-  <nav class="navbar navbar-expand-sm navbar-light border-bottom">
+  <nav class="navbar navbar-expand-sm navbar-light border-bottom py-0">
     <a class="navbar-brand" href="/">
       <span class="red">B</span><span class="yellow">A</span><span class="blue">D</span>
       <span class="green">Books</span>
@@ -30,7 +30,7 @@
           <!-- <li class="nav-item"><a class="nav-link" href="/logout">Log Out</a></li> -->
         </ul>
       {% else %}
-        <ul class="navbar-nav ml-auto mt-2">
+        <ul class="navbar-nav ml-auto">
           <li class="nav-item"><a class="nav-link" href="{{url_for('login', next=request.full_path)}}">Log In</a></li>
         </ul>
       {% endif %}

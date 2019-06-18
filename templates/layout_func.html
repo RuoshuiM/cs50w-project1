@@ -8,7 +8,7 @@ BAD Books: {% block title %}{% endblock %}
 {% block body %}
 
 <header>
-  <nav class="navbar navbar-expand-md navbar-light border">
+  <nav class="navbar navbar-expand-md navbar-light border py-0">
     <a class="navbar-brand" href="/">
       <span class="red">B</span><span class="yellow">A</span><span class="blue">D</span>
       <span class="green">Books</span>
@@ -18,14 +18,24 @@ BAD Books: {% block title %}{% endblock %}
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbar">
-      {% if session.user_id %}
       <!-- <ul class="navbar-nav mr-auto mt-2">
         <li class="nav-item"><a class="nav-link" href="/quote">Quote</a></li>
         <li class="nav-item"><a class="nav-link" href="/buy">Buy</a></li>
         <li class="nav-item"><a class="nav-link" href="/sell">Sell</a></li>
         <li class="nav-item"><a class="nav-link" href="/history">History</a></li>
       </ul> -->
-      <ul class="navbar-nav ml-auto mt-2">
+      <form action="{{url_for('search')}}" method="get" class="form-inline my-2 my-lg-0 w-75">
+        <input type="search" name="q" id="search_box" class="form-control mx-2 w-75" aria-label="Search"
+          value="{{request.args.get('q') or ''}}" required>
+
+        <button class="btn btn-light rounded-circle" type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+            viewBox="0 0 24 24">
+            <path
+              d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+            <path d="M0 0h24v24H0z" fill="none" /></svg></button>
+      </form>
+      {% if session.user_id %}
+      <ul class="navbar-nav ml-auto">
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
@@ -39,12 +49,22 @@ BAD Books: {% block title %}{% endblock %}
         </li>
       </ul>
       {% else %}
-      <ul class="navbar-nav ml-auto mt-2">
+      <ul class="navbar-nav ml-auto">
         <li class="nav-item"><a class="nav-link" href="{{url_for('login', next=request.full_path)}}">Log In</a></li>
       </ul>
       {% endif %}
     </div>
   </nav>
+
+  {% if get_flashed_messages() %}
+  <header>
+    <div class="alert text-center {% if err %} alert-danger {% else %} alert-primary {% endif %}" role="alert">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button> {{ get_flashed_messages() | join(" ") }}
+    </div>
+  </header>
+  {% endif %}
 
   {% block header %} {% endblock %}
 </header>

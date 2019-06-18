@@ -1,6 +1,6 @@
-html {
-    // font-size: 1.5vw;
-}
+// html {
+//     // font-size: 1.5vw;
+// }
 
 $GOLDEN: 61.803398875%;
 
@@ -24,9 +24,10 @@ nav .navbar-brand {
     position: absolute;
 }
 
-a.nav_link:hover {
-    text-decoration: underline;
-}
+// Does not work. Don't know why
+// a.nav_link:hover {
+//     text-decoration: underline;
+// }
 
 /* colors for brand */
 /* nav .navbar-brand  */
@@ -82,7 +83,7 @@ main {
 
 form {
 
-    #query {
+    #query, input[type=search] {
         @extend %rounded-corner;
         width: $GOLDEN;
     }
@@ -91,3 +92,9 @@ form {
         @extend %rounded-corner;
     }
 }
+
+// Attempts to put search icon inside bar; doesn't work
+// https://stackoverflow.com/a/11589805
+// header input[type=search]::after {
+//     content: url("../img/search.svg");
+// }

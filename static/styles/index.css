@@ -1,4 +1,4 @@
-form #query, form button {
+form #query, form input[type=search], form button {
   border-radius: 50px;
 }
 
@@ -14,10 +14,6 @@ nav .navbar-brand {
 
 .dropdown-menu.show {
   position: absolute;
-}
-
-a.nav_link:hover {
-  text-decoration: underline;
 }
 
 /* colors for brand */
@@ -69,7 +65,7 @@ main img {
   max-width: 100%;
 }
 
-form #query {
+form #query, form input[type=search] {
   width: 61.8034%;
 }
 /*# sourceMappingURL=index.css.map */
