@@ -2,20 +2,21 @@
 
 Web Programming with Python and JavaScript
 
-## Todo:
+## Todo-list:
 
-Backend
+### Backend
 - book search
 - add reviews
 - calculate ratings
 
-Frontend
+### Frontend
 - search page
+    - use bootstrap cards for each result book
 - book detail page
     - reviews for books
 - use js to ensure more careful deletion (like typing in username to confirm)
 
-Done:
+### Done:
 - login
 - logout
 - user registration
@@ -28,11 +29,11 @@ Done:
     - should reviews be deleted? No
 
 
-Be careful about (Which I spent hours debugging):
+### Be careful about (Which I spent hours debugging):
 - Commit! Commit! Commit! Commit everytime modifying database (INSERT, UPDATE, DELETE)
 
-Problems that still exist:
+### Problems that still exist:
 
-Styling:
-- How to get the search icon to be inside box?
-- Underline link on hover doesn't work for header links
+- Styling:
+    - How to get the search icon to be inside box?
+    - Underline link on hover doesn't work for header links
