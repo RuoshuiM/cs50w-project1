@@ -32,15 +32,15 @@ BAD Books: {% block title %}{% endblock %}
             My Account
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <a class="dropdown-item" href="{{url_for('account', next=request.url)}}">Account Settings</a>
+            <a class="dropdown-item" href="{{url_for('account', next=request.full_path)}}">Account Settings</a>
             <div class="dropdown-divider"></div>
-            <a class="dropdown-item" href="{{url_for('logout', next=request.url)}}">Log Out</a>
+            <a class="dropdown-item" href="{{url_for('logout', next=request.full_path)}}">Log Out</a>
           </div>
         </li>
       </ul>
       {% else %}
       <ul class="navbar-nav ml-auto mt-2">
-        <li class="nav-item"><a class="nav-link" href="{{url_for('login', next=request.url)}}">Log In</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{url_for('login', next=request.full_path)}}">Log In</a></li>
       </ul>
       {% endif %}
     </div>

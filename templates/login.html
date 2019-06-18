@@ -9,7 +9,7 @@
 
 <h1>Log In</h1>
 
-<form class="mt-5" action="/login" method="post">
+<form class="mt-5" action="{{url_for('login', next=redirect_url())}}" method="post">
     
     
     <div class="form-group">

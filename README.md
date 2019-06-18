@@ -23,7 +23,11 @@ Done:
 - logout
 - user registration
 - change password
+- redirect back to prev page on:
+    - login
+    - register
+    - logout
 
 
-Errors to be careful about (Which I spent hours to debug):
+Be careful about (Which I spent hours debugging):
 - Commit! Commit! Commit! Commit everytime modifying database (INSERT, UPDATE, DELETE)

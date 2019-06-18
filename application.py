@@ -38,8 +38,6 @@ API_KEY = "jQeENaVIOL2SRBFQ9ZQgw"
 @app.context_processor
 def override_url_for():
     return dict(url_for=dated_url_for)
-
-
 def dated_url_for(endpoint, **values):
     if endpoint == 'static':
         filename = values.get('filename', None)
@@ -49,6 +47,9 @@ def dated_url_for(endpoint, **values):
             values['q'] = int(os.stat(file_path).st_mtime)
     return url_for(endpoint, **values)
 
+@app.context_processor
+def redirect_processor():
+    return dict(redirect_url=redirect_url)
 
 @app.route("/")
 def index():
@@ -68,7 +69,8 @@ def login():
     if request.method == "POST":
         # On POST, try to log user in
 
-        next_page = redirect_url()
+        err, msg = False, ""
+        print("next", request.args.get("next"))
 
         try:
             username = request.form.get("username")
@@ -76,43 +78,41 @@ def login():
         except:
             # Username and password will be provided, checked by js on client side
             # But still check here in case
-            flash("Must provide a username and password")
-            return render_template("login.html"), 403
+            msg = "Must provide a username and password"
+            err = True
 
-        # Query database for username
-        user_data = db.execute("SELECT id, username, passhash FROM users WHERE username = :username", {
-                               'username': username}).fetchall()
+        if not err:
+            # Query database for username
+            user_data = db.execute("SELECT id, username, passhash FROM users WHERE username = :username", {
+                'username': username}).fetchall()
+            # Ensure username exists
+            if len(user_data) != 1:
+                err, msg = True, "Username not found"
 
-        has_error, message = False, ""
-
-        # Ensure username exists
-        if len(user_data) != 1:
-            has_error, message = True, "Username not found"
-
-        else:
+        if not err:
             # Extract user_id, username, password from database
             user_id, db_username, db_password = user_data[0]
-
+            
             #  Check password
             if not check_password_hash(db_password, password):
-                has_error, message = True, "Invalid password"
+                err, msg = True, "Invalid password"
 
-        if has_error:
-            flash(message)
+        if err:
+            flash(msg)
             # return render_template('login.html', next=next_page), 403
-            return redirect(url_for('login', next=next_page))
+            return redirect(url_for('login', next=redirect_url()))
+
         else:
             session['user_id'] = user_id
             session['username'] = username
-            return redirect(next_page)
+            # print("redirect", redirect_url())
+            # print("next:", request.args.get("next"))
+            # print("request.full_path", request.full_path)
+            return redirect(redirect_url() or url_for('index'))
 
     else:
         # On GET, return login page
-
-        print("Referrer:", request.referrer)
-        print("Redirect:", redirect_url())
         return render_template("login.html")
-        
 
 
 @app.route('/logout')
@@ -120,7 +120,7 @@ def logout():
     """Log out the user"""
 
     session.clear()
-    return redirect(url_for('index'))
+    return redirect(redirect_url() or url_for('index'))
 
 
 @app.route('/account')
@@ -200,6 +200,9 @@ def delete_account():
 def register():
     """Register user"""
 
+    msg = ""
+    err = False
+
     if request.method == "POST":
         # On POST, register user based on form
         try:
@@ -209,19 +212,23 @@ def register():
         except:
             # Username, password, and other fields will be provided, checked by js on client side
             # But still check here in case
-            flash("Must fill in all fields")
-            return render_template('register.html'), 403
+            msg = "Must fill in all fields"
+            err = True
 
         # Check if user already exists
-        (count,) = db.execute("SELECT COUNT(*) FROM users WHERE username = :username",
-                              {'username': username}).fetchone()
-        if int(count) != 0:
-            flash("Username already taken")
-            return render_template('register.html'), 403
+        if not err:
+            (count,) = db.execute("SELECT COUNT(*) FROM users WHERE username = :username",
+                                  {'username': username}).fetchone()
+            if int(count) != 0:
+                msg = "Username already taken"
+                err = True
 
-        if not repeat == password:
-            flash("Passwords must match")
-            return render_template('register.html'), 403
+            if not err and not (repeat == password):
+                msg = "Passwords must match"
+                err = True
+        
+        if err:
+            return redirect(url_for('register', next=redirect_url))
 
         db.execute("INSERT INTO users (username, passhash) VALUES (:username, :passhash)",
                    {
@@ -232,11 +239,10 @@ def register():
         db.commit()
 
         flash("Registered!")
-        return redirect(url_for('index'))
+        return redirect(redirect_url() or url_for('index'))
 
     else:
         # On GET, return registration page
-
         return render_template('register.html')
 
 

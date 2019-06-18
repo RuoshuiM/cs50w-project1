@@ -7,9 +7,10 @@ def redirect_url():
     home: whether url should default to homepage
     """
     
-    return request.args.get('next') or \
-       request.referrer or \
-       url_for('index')
+    return request.args.get('next') 
+    # or \
+    #    request.referrer or \
+    #    url_for('index')
        
 def logged_in():
     return session.get('user_id') is not None
