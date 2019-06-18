@@ -196,7 +196,7 @@ def delete_account():
     session.clear()
 
     flash("Account deleted!")
-    return redirect(url_for("index"))
+    return redirect(url_for("login"))
 
 
 @app.route("/register", methods=["GET", "POST"])
@@ -242,7 +242,7 @@ def register():
         db.commit()
 
         flash("Registered!")
-        return redirect(redirect_url() or url_for('index'))
+        return redirect(redirect_url() or url_for('login'))
 
     else:
         # On GET, return registration page
@@ -269,19 +269,19 @@ def search():
     results = Search.empty()
 
     if by_title == by_author == by_isbn:
-        # results.update(Search.by_title(db, query))
-        # results.update(Search.by_author(db, query))
-        # results.update(Search.by_isbn(db, query))
-        print(Search.by_title(db, query))
-        print(Search.by_author(db, query))
-        print(Search.by_isbn(db, query))
+        results.update(Search.by_title(db, query) or {})
+        results.update(Search.by_author(db, query) or {})
+        results.update(Search.by_isbn(db, query) or {})
+        # print(Search.by_title(db, query))
+        # print(Search.by_author(db, query))
+        # print(Search.by_isbn(db, query))
     else:
         if by_title:
-            results.update(Search.by_title(db, query))
+            results.update(Search.by_title(db, query) or {})
         if by_author:
-            results.update(Search.by_author(db, query))
+            results.update(Search.by_author(db, query) or {})
         if by_isbn:
-            results.update(Search.by_isbn(db, query))
+            results.update(Search.by_isbn(db, query) or {})
 
     print(results)
     return render_template('search.html', books=results)

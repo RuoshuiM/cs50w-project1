@@ -17,19 +17,19 @@ db = engine.connect()
 fin = open("books.csv")
 reader = csv.reader(fin)
 
-db.execute("""CREATE TABLE books (
+db.execute("""CREATE TABLE books_lower (
     id SERIAL PRIMARY KEY,
-    isbn VARCHAR NOT NULL,
-    title VARCHAR NOT NULL,
-    author VARCHAR NOT NULL,
+    isbn CITEXT NOT NULL,
+    title CITEXT NOT NULL,
+    author CITEXT NOT NULL,
     year INTEGER NOT NULL
     );""")
 
 next(reader)  # get rid of title line
 
 for info in reader:
-    db.execute("""INSERT INTO books 
+    db.execute("""INSERT INTO books_lower 
                     (isbn, title, author, year)
                     VALUES (%s, %s, %s, %s)""", info)
 
-
+db.commit()

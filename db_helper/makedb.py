@@ -18,15 +18,15 @@ def create():
     # table of users
     db.execute("""CREATE TABLE users (
         id SERIAL PRIMARY KEY,
-        username VARCHAR NOT NULL,
-        passhash VARCHAR NOT NULL
+        username TEXT NOT NULL,
+        passhash TEXT NOT NULL
         )""")
 
     db.execute("""CREATE TABLE reviews (
         user_id INTEGER REFERENCES users(id),
         book_id INTEGER REFERENCES books(id),
         rating INTEGER NOT NULL,
-        text VARCHAR NOT NULL,
+        text TEXT NOT NULL,
         PRIMARY KEY (user_id, book_id)
     )""")
 

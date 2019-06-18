@@ -23,4 +23,4 @@
 
 
 <br>
-<a href="/register">Create Account</a> {% endblock %}
+<a href="{{url_for('register', next=request.full_path)}}">Create Account</a> {% endblock %}
