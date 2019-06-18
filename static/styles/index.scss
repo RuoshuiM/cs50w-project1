@@ -13,13 +13,6 @@ nav .navbar-brand {
     font-size: xx-large;
 }
 
-// Menu used to be out of view. This fixes the issue with right alignemnt
-// https://stackoverflow.com/a/49383596
-.navbar .dropdown-menu-right { 
-    right: 0; 
-    left: auto; 
-}
-
 .dropdown-menu.show {
     position: absolute;
 }

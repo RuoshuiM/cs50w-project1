@@ -54,7 +54,7 @@
             </h1>
         </div>
     </div>
-    <form action="/search" method="get">
+    <form action="{{url_for('search')}}" method="get">
         <div class="form-group my-3">
             <input type="search" class="form-control form-control-lg rounded-pill" name="q" id="query" placeholder="Search BAD Books"
                 autofocus required>

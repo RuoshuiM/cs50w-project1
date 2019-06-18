@@ -14,6 +14,7 @@ Web Programming with Python and JavaScript
     - use bootstrap cards for each result book
 - book detail page
     - reviews for books
+- use bootstrap for nicer form validation messages
 - use js to ensure more careful deletion (like typing in username to confirm)
 
 ### Done:
@@ -31,9 +32,10 @@ Web Programming with Python and JavaScript
 
 ### Be careful about (Which I spent hours debugging):
 - Commit! Commit! Commit! Commit everytime modifying database (INSERT, UPDATE, DELETE)
+- Update Bootstrap! (So dropdown-menu-right and custom_forms work!)
 
 ### Problems that still exist:
 
 - Styling:
-    - How to get the search icon to be inside box?
+    - How to get the search icon to be inside of the search box?
     - Underline link on hover doesn't work for header links

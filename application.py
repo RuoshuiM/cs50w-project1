@@ -1,16 +1,19 @@
+import json
 import os
+
+import requests
+from flask import (Flask, flash, redirect, render_template, request, session,
+                   url_for)
+from flask_session import Session
+from sqlalchemy import create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from helper import logged_in, login_required, redirect_url, Search
 
 # env FLASK_APP=application.py FLASK_ENV=development FLASK_DEBUG=1 DATABASE_URL=postgres://jgiduehaaiifrf:c8f46939b0036d5279517bd6e058b003814d303246b41a14eab3b0a066331453@ec2-50-19-127-115.compute-1.amazonaws.com:5432/d4jthl04loj6n1 flask run
 # Local database: postgresql://postgres:postgres@localhost:5432/project1
 
-from flask import Flask, flash, session, redirect, render_template, request, url_for
-from flask_session import Session
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
-import requests
-import json
-from werkzeug.security import check_password_hash, generate_password_hash
-from helper import login_required, logged_in, redirect_url
 
 app = Flask(__name__)
 
@@ -254,16 +257,33 @@ def book(id):
 @app.route("/search")
 def search():
     query = request.args.get('q')
-
+    by_title = request.args.get('search_by_title')
+    by_author = request.args.get('search_by_author')
+    by_isbn = request.args.get('search_by_isbn')
+    
     if query is None:
         flash('Enter search keyword')
         return render_template('search.html')
 
     # Keep track of matching books
-    results = []
+    results = Search.empty()
 
-    # TODO: add search functionality
+    if by_title == by_author == by_isbn:
+        # results.update(Search.by_title(db, query))
+        # results.update(Search.by_author(db, query))
+        # results.update(Search.by_isbn(db, query))
+        print(Search.by_title(db, query))
+        print(Search.by_author(db, query))
+        print(Search.by_isbn(db, query))
+    else:
+        if by_title:
+            results.update(Search.by_title(db, query))
+        if by_author:
+            results.update(Search.by_author(db, query))
+        if by_isbn:
+            results.update(Search.by_isbn(db, query))
 
+    print(results)
     return render_template('search.html', books=results)
 
 # # tesing api

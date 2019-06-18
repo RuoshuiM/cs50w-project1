@@ -4,6 +4,10 @@
 BAD Books: {% block title %}{% endblock %}
 {% endblock %}
 
+{% block styles %}
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+{% endblock %}
+
 
 {% block body %}
 
@@ -25,14 +29,110 @@ BAD Books: {% block title %}{% endblock %}
         <li class="nav-item"><a class="nav-link" href="/history">History</a></li>
       </ul> -->
       <form action="{{url_for('search')}}" method="get" class="form-inline my-2 my-lg-0 w-75">
-        <input type="search" name="q" id="search_box" class="form-control mx-2 w-75" aria-label="Search"
-          value="{{request.args.get('q') or ''}}" required>
+        <input type="search" name="q" id="search_box" class="form-control mx-2 w-50" aria-label="Search"
+          value="{{request.args.get('q') or ''}}" placeholder="Search BAD Books" required>
 
-        <button class="btn btn-light rounded-circle" type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            viewBox="0 0 24 24">
-            <path
-              d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
-            <path d="M0 0h24v24H0z" fill="none" /></svg></button>
+        <button title="Search By" class="btn btn-light rounded-circle" type="submit">
+          <i class="material-icons">search</i>
+        </button>
+        <!-- <div class="dropdown mx-2">
+          <button class="btn btn-light rounded-circle dropdown-toggle" type="button" id="option_toggle"
+            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <i class="material-icons">settings</i>
+          </button>
+          <div class="dropdown-menu mr-1" aria-labelledby="option_toggle">
+            <div class="custom-control custom-switch">
+              <input class="custom-control-input" type="checkbox" name="check_title" id="check_title">
+              <label class="custom-control-label" for="check_title">
+                Title
+              </label>
+            </div>
+            <div class="custom-control custom-switch">
+              <input class="custom-control-input" type="checkbox" name="check_author" id="check_author">
+              <label class="custom-control-label" for="check_author">
+                Author
+              </label>
+            </div>
+            <div class="custom-control custom-switch">
+              <input class="custom-control-input" type="checkbox" name="check_isbn" id="check_isbn">
+              <label class="custom-control-label" for="check_isbn">
+                ISBN
+              </label>
+            </div>
+          </div>
+        </div> -->
+
+        <!-- pop-up effect on click -->
+
+        <!-- <button class="btn btn-light rounded-circle ml-2" type="button" id="option_toggle" data-toggle="modal"
+          data-target="#search_modal">
+          <i class="material-icons">settings</i>
+        </button>
+        <div class="modal fade" id="search_modal" tabindex="-1" role="dialog" aria-describedby="search_modal_label"
+          aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="search_modal_label">Search By</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="custom-control custom-switch">
+                  <input class="custom-control-input" type="checkbox" name="search_by_title" id="check_title">
+                  <label class="custom-control-label" for="check_title">
+                    Title
+                  </label>
+                </div>
+                <div class="custom-control custom-switch">
+                  <input class="custom-control-input" type="checkbox" name="search_by_author" id="check_author">
+                  <label class="custom-control-label" for="check_author">
+                    Author
+                  </label>
+                </div>
+                <div class="custom-control custom-switch">
+                  <input class="custom-control-input" type="checkbox" name="search_by_isbn" id="check_isbn">
+                  <label class="custom-control-label" for="check_isbn">
+                    ISBN
+                  </label>
+                </div>
+              </div>
+               <div class="modal-footer">
+              </div> 
+            </div>
+          </div>
+        </div> -->
+
+
+        <!-- collapse effect for select -->
+        <button class="btn btn-light rounded-circle ml-2" type="button" id="option_toggle" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="search_collapse"
+          data-target="#search_collapse">
+          <i class="material-icons">settings</i>
+        </button>
+        <div class="collapse mx-auto" id="search_collapse">
+            <!-- <div class="card card-body"> -->
+                <div class="custom-control custom-switch custom-control-inline">
+                    <input class="custom-control-input" type="checkbox" name="search_by_title" id="check_title">
+                    <label class="custom-control-label" for="check_title">
+                      Title
+                    </label>
+                  </div>
+                  <div class="custom-control custom-switch custom-control-inline">
+                    <input class="custom-control-input" type="checkbox" name="search_by_author" id="check_author">
+                    <label class="custom-control-label" for="check_author">
+                      Author
+                    </label>
+                  </div>
+                  <div class="custom-control custom-switch custom-control-inline">
+                    <input class="custom-control-input" type="checkbox" name="search_by_isbn" id="check_isbn">
+                    <label class="custom-control-label" for="check_isbn">
+                      ISBN
+                    </label>
+                  </div>
+            <!-- </div> -->
+          </div>
+
       </form>
       {% if session.user_id %}
       <ul class="navbar-nav ml-auto">
@@ -41,7 +141,7 @@ BAD Books: {% block title %}{% endblock %}
             aria-haspopup="true" aria-expanded="false">
             My Account
           </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
             <a class="dropdown-item" href="{{url_for('account', next=request.full_path)}}">Account Settings</a>
             <div class="dropdown-divider"></div>
             <a class="dropdown-item" href="{{url_for('logout', next=request.full_path)}}">Log Out</a>
