@@ -7,13 +7,11 @@ Web Programming with Python and JavaScript
 ### Backend
 - book search
     - do case insensitive search
-    - enable search category and remember selection
+    - enable search category and remember selection - use cookies
 - add reviews
 - calculate ratings
 
 ### Frontend
-- search page
-    - use bootstrap cards for each result book
 - book detail page
     - reviews for books
 - use bootstrap for nicer form validation messages
@@ -30,6 +28,8 @@ Web Programming with Python and JavaScript
     - logout
 - delete account
     - should reviews be deleted? No
+- search page
+    - use bootstrap cards for each result book
 
 
 ### Be careful about (Which I spent hours debugging):

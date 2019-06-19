@@ -270,6 +270,12 @@ def search():
     by_author = request.args.get('search_by_author')
     by_isbn = request.args.get('search_by_isbn')
     
+    search_methods = []
+
+    if by_title: search_methods.append("title")
+    if by_author: search_methods.append("author")
+    if by_isbn: search_methods.append("isbn")
+
     if query is None:
         flash('Enter search keyword')
         return render_template('search.html')
@@ -293,7 +299,7 @@ def search():
             results.update(Search.by_isbn(db, query) or {})
 
     # print(results)
-    return render_template('search.html', books=results, query=query)
+    return render_template('search.html', books=results, query=query, methods=search_methods)
 
 # # tesing api
 # @app.route("/api")
