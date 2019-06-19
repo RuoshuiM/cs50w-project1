@@ -43,10 +43,10 @@ class Search():
 
         returns all resulting books as a list of tuples
         """
-        return OrderedSet(tuple(x.values()) for x in \
-            db.execute('SELECT * FROM books WHERE title = :q OR title LIKE :wq',
-                          {'q': title,
-                           'wq': f'%{title}%'}).fetchall())
+        return OrderedSet(tuple(x.values()) for x in
+                          db.execute('SELECT * FROM books WHERE title = :q OR title LIKE :wq',
+                                     {'q': title,
+                                      'wq': f'%{title}%'}).fetchall())
 
     @staticmethod
     def by_author(db, author):
@@ -54,10 +54,10 @@ class Search():
 
         returns all resulting books as a list of tuples
         """
-        return OrderedSet(tuple(x.values()) for x in \
-            db.execute('SELECT * FROM books WHERE author = :q OR author LIKE :wq',
-                          {'q': author,
-                           'wq': f'%{author}%'}).fetchall())
+        return OrderedSet(tuple(x.values()) for x in
+                          db.execute('SELECT * FROM books WHERE author = :q OR author LIKE :wq',
+                                     {'q': author,
+                                      'wq': f'%{author}%'}).fetchall())
 
     @staticmethod
     def by_isbn(db, isbn):
@@ -65,7 +65,7 @@ class Search():
 
         returns all resulting books as a list of tuples
         """
-        return OrderedSet(tuple(x.values()) for x in \
-            db.execute('SELECT * FROM books WHERE isbn = :q OR isbn LIKE :wq',
-                          {'q': isbn,
-                           'wq': f'%{isbn}%'}).fetchall())
+        return OrderedSet(tuple(x.values()) for x in
+                          db.execute('SELECT * FROM books WHERE isbn = :q OR isbn LIKE :wq',
+                                     {'q': isbn,
+                                      'wq': f'%{isbn}%'}).fetchall())

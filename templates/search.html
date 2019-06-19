@@ -1,2 +1,34 @@
 {% extends "layout_func.html" %}
 
+{% block main %}
+<div class="search">
+
+    {% for id, isbn, title, author, year in books %}
+    <div class="card border-0">
+        <a href="{{ url_for('book', id=id) }}" class="card-link">
+            <div class="card-body">
+                <h5 class="card-title">{{ title }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted">{{ author }}, {{ year }}</h6>
+                <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
+                                    content.</p> -->
+            </div>
+        </a>
+    </div>
+    {% else %}
+    <div class="card border-0">
+        <div class="card-body">
+            <h5 class="card-title">Your search - {{ query | trim(15)}} - did not match any books</h5>
+            <h6 class="card-subtitle mb-2 text-muted">Some suggestions: </h6>
+            <ul class="card-text">
+                <li>Make sure all words are spelled correctly.</li>
+                <li>Try different keywords.</li>
+                <li>Try more general keywords.</li>
+                <li>Try fewer keywords.</li>
+                <li>If you selected only one search category (title, for example), try including more.</li>
+            </ul>
+        </div>
+    </div>
+    {% endfor %}
+
+</div>
+{% endblock %}

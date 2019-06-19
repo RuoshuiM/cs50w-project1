@@ -76,7 +76,8 @@ main {
 
 form {
 
-    #query, input[type=search] {
+    #query,
+    input[type=search] {
         @extend %rounded-corner;
         width: $GOLDEN;
     }
@@ -84,6 +85,10 @@ form {
     button {
         @extend %rounded-corner;
     }
+}
+
+.search {
+    text-align: left;
 }
 
 // Attempts to put search icon inside bar; doesn't work

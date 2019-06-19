@@ -7,6 +7,7 @@ Web Programming with Python and JavaScript
 ### Backend
 - book search
     - do case insensitive search
+    - enable search category and remember selection
 - add reviews
 - calculate ratings
 

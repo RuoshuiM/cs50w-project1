@@ -3,7 +3,7 @@ import os
 
 import requests
 from flask import (Flask, flash, redirect, render_template, request, session,
-                   url_for)
+                   url_for, jsonify)
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
@@ -53,6 +53,15 @@ def dated_url_for(endpoint, **values):
 @app.context_processor
 def redirect_processor():
     return dict(redirect_url=redirect_url)
+
+@app.add_template_filter
+def trim(text, max_len):
+    print(text, max_len)
+    if len(text) > max_len:
+        return f"{text[:max_len]} ..."
+    else:
+        return text
+
 
 @app.route("/")
 def index():
@@ -283,8 +292,8 @@ def search():
         if by_isbn:
             results.update(Search.by_isbn(db, query) or {})
 
-    print(results)
-    return render_template('search.html', books=results)
+    # print(results)
+    return render_template('search.html', books=results, query=query)
 
 # # tesing api
 # @app.route("/api")
@@ -330,19 +339,26 @@ def book_info(isbn):
                        "key": API_KEY, "isbns": isbn})
 
     if res.status_code == 404 or res.status_code == 422:
-        return error_msg, 404
+        return jsonify({"error": error_msg}), 404
 
     json_data = json.loads(res.text)
 
     book = json_data["books"][0]
 
-    info = {
+    return jsonify ({
         "title": my_book["title"],
         "author": my_book["author"],
         "isbn": my_book["isbn"],
         "year": my_book["year"],
         "review_count": book["reviews_count"],
         "average_score": float(book["average_rating"])
-    }
+    })
 
-    return json.dumps(info)
+# def errorhandler(e):
+#     """Handle error"""
+#     return apology(e.name, e.code)
+
+
+# # listen for errors
+# for code in default_exceptions:
+#     app.errorhandler(code)(errorhandler)

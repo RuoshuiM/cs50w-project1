@@ -1,4 +1,5 @@
-form #query, form input[type=search], form button {
+form #query,
+form input[type=search], form button {
   border-radius: 50px;
 }
 
@@ -60,7 +61,12 @@ main img {
   max-width: 100%;
 }
 
-form #query, form input[type=search] {
+form #query,
+form input[type=search] {
   width: 61.8034%;
+}
+
+.search {
+  text-align: left;
 }
 /*# sourceMappingURL=index.css.map */
