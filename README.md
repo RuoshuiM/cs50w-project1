@@ -2,16 +2,15 @@
 
 Web Programming with Python and JavaScript
 
+## Decisions I made, not specified in spec
+- API average_score will be "N/A" if review_count == 0
+
 ## Todo-list:
 
 ### Backend
-- add reviews
-- calculate ratings
 - split search into multiple pages (Using SQL LIMIT and OFFSET, perhaps), since I don't want ajax at this point (or maybe that's a good option, who knows!)
-- modify site api
 
 ### Frontend
-- book reviews
 - add footer
 - use bootstrap for nicer form validation messages
 - use js to ensure more careful deletion (like typing in username to confirm)
@@ -36,6 +35,10 @@ Web Programming with Python and JavaScript
     - https://stackoverflow.com/questions/8674718/best-way-to-select-random-rows-postgresql 
     - TABLESAMPLE SYSTEM
 - book detail page
+- book reviews
+    - ability to add/modify reviews
+- calculate ratings
+- make api
 
 
 ### Be careful about (Which I spent hours debugging):
