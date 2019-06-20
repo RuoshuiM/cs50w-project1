@@ -277,8 +277,6 @@ def book(id):
             'num_ratings': good_reads_data.get('work_ratings_count'),
             'average_rating': good_reads_data.get('average_rating')
         }
-        print(good_reads_data)
-        print(data)
     return render_template("book.html", book=book, data=data)
 
 
@@ -303,19 +301,19 @@ def search():
     results = Search.empty()
 
     if by_title == by_author == by_isbn:
-        results.update(Search.by_title(db, query) or {})
-        results.update(Search.by_author(db, query) or {})
-        results.update(Search.by_isbn(db, query) or {})
+        results.update(Search.by_title(db, query))
+        results.update(Search.by_author(db, query))
+        results.update(Search.by_isbn(db, query))
         # print(Search.by_title(db, query))
         # print(Search.by_author(db, query))
         # print(Search.by_isbn(db, query))
     else:
         if by_title:
-            results.update(Search.by_title(db, query) or {})
+            results.update(Search.by_title(db, query))
         if by_author:
-            results.update(Search.by_author(db, query) or {})
+            results.update(Search.by_author(db, query))
         if by_isbn:
-            results.update(Search.by_isbn(db, query) or {})
+            results.update(Search.by_isbn(db, query))
 
     # print(results)
     return render_template('search.html', books=results, query=query, methods=search_methods, num_results=len(results))
@@ -329,6 +327,12 @@ def search():
 #     print("Success!")
 #     return str(res.json())
 
+@app.route('/lucky')
+def lucky():
+    # Remember to enable extension: CREATE EXTENSION tsm_system_rows;
+    # https://www.postgresql.org/docs/current/tsm-system-rows.html
+    (id,) = db.execute("SELECT id FROM books TABLESAMPLE SYSTEM_ROWS(1)").fetchone()
+    return redirect(url_for('book', id=id))
 
 @app.route('/api/<string:isbn>')
 def book_info(isbn):
