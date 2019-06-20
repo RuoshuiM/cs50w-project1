@@ -392,6 +392,10 @@ def lucky():
     (id,) = db.execute("SELECT id FROM books TABLESAMPLE SYSTEM_ROWS(1)").fetchone()
     return redirect(url_for('book', id=id))
 
+@app.route('/help')
+def help():
+    return render_template('help.html')
+
 @app.route('/api/<string:isbn>')
 def book_info(isbn):
     """API access for this site
