@@ -2,46 +2,161 @@
 {% extends "layout_func.html" %}
 
 {% block main %}
-{% if book %}
-
-<div class="card-deck">
+{% if not error %}
+<section class="card-deck mb-3">
     <div class="card border-0">
         <div class="card-body">
             <h1 class="card-title">{{ book.title }}</h1>
-            <div class="text-muted">
-                <h5 class="card-text my-3">By: {{ book.author }}</h5>
-                <h5 class="card-text my-3">ISBN: {{ book.isbn }}</h5>
-                <h5 class="card-text my-3">Published in {{ book.year }}</h5>
-            </div>
+            <ul class="list-group list-group-flush text-muted">
+                <li class="list-group-item">
+                    <h5 class="card-text my-2">By: {{ book.author }}</h5>
+                </li>
+                <li class="list-group-item">
+                    <h5 class="card-text my-2">ISBN: {{ book.isbn }}</h5>
+                </li>
+                <li class="list-group-item">
+                    <h5 class="card-text my-2">Published in {{ book.year }}</h5>
+                </li>
+                <li class="list-group-item">
+                    <h5 class="card-text my-2">
+                        {% if book.average_rating %}
+                        BAD average rating: {{ book.average_rating | num }} out of 5
+                        {% else %}
+                        No BAD rating data found
+                        {% endif %}
+                    </h5>
+                </li>
+            </ul>
         </div>
     </div>
     <div class="card border-0">
         <div class="card-body">
             <h3 class="card-title mt-5">Goodreads Data</h3>
 
-            <div class="text-muted">
+            <ul class="list-group list-group-flush text-muted">
                 {% if data %}
-                <h5 class="card-text my-3">{{ data.num_ratings }} ratings received</h5>
-                <h5 class="card-text my-3">Average rating: {{ data.average_rating }} out of 5</h5>
-                {% else %}
-                <h4 class="card-text">No Goodreads data are found</h4>
-                {% endif %}
-            </div>
 
+                <li class="list-group-item">
+                    <h5 class="card-text my-2">{{ data.num_ratings }} ratings received</h5>
+                </li>
+                <li class="list-group-item">
+                    <h5 class="card-text my-2">Average rating: {{ data.average_rating }} out of 5</h5>
+                </li>
+
+                {% else %}
+
+                <li class="list-group-item">
+                    <h4 class="card-text">No Goodreads data are found</h4>
+                </li>
+
+                {% endif %}
+            </ul>
         </div>
     </div>
-</div>
+</section>
 
 <!-- TODO: add reviews here! -->
+<h2>Reviews</h2>
+<hr>
+
+{% if logged_in() %}
+
+<form action="{{ url_for('add_review') }}" method="post">
+    <input type="hidden" name="book_id" value="{{ book.id }}">
+    <div class="row form-group">
+
+        {% if user_data %}
+        <div class="card w-100">
+            <div class="row">
+                <div class="col-md-3 text-right">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item card-text">My Review</li>
+                        <li class="list-group-item">Rating: {{ user_data.rating }}</li>
+                    </ul>
+                </div>
+                <div class="card-body col-md-9">
+                    <p class="card-text">{{ user_data.text }}</p>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-outline-secondary btn-block my-2" data-toggle="modal"
+            data-target="#review_modal">
+            Edit my review
+        </button>
+        {% else %}
+        <button type="button" class="btn btn-outline-secondary btn-block my-2" data-toggle="modal"
+            data-target="#review_modal">
+            Write a review
+        </button>
+        {% endif %}
+    </div>
+
+
+    <!-- Review modal -->
+    <div class="modal fade" id="review_modal" tabindex="-1" role="dialog" aria-describedby="review_modal_label"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="review_modal_label">{{ book.title }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <!-- <label for="rating">My Rating:</label> -->
+                        <input class="form-control w-50" type="number" min="1" max="5" name="rating" id="rating"
+                            placeholder="Rating out of 5" {% if user_data %} value="{{ user_data.rating }}" {% endif %}
+                            required />
+                    </div>
+                    <div class="form-group">
+                        <!-- <label for="review_text sr-only sr-only-focusable">Review</label> -->
+                        <textarea class="form-control form-control-lg" name="review" id="review_text" cols="30"
+                            rows="10" placeholder="Tell us what you think about this book ..." required>
+                            {%- if user_data %}{{ user_data.text }}{% endif -%}
+                        </textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-outline-success">Submit</button>
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% else %}
+<a class="btn btn-outline-secondary btn-block my-2" href="{{ url_for('login', next=request.full_path) }}">Log in to review</a>
+{% endif %}
+
+{% for username, rating, text in reviews %}
+<div class="card w-100 mt-3 bg-light">
+        <div class="row">
+            <div class="col-md-3 text-right">
+                <ul class="list-group list-group-flush">
+                    <li class="bg-light list-group-item card-text">{{ username }}</li>
+                    <li class="bg-light list-group-item">Rating: {{ rating }}</li>
+                </ul>
+            </div>
+            <div class="card-body col-md-9">
+                <p class="card-text">{{ text }}</p>
+            </div>
+        </div>
+    </div>
+
+{% else %}
+<h3 class="text-muted">No reviews yet. Be the first to review this book!</h3>
+{% endfor %}
+
 
 {% else %}
 <div class="card border-0 text-left">
     <div class="card-body">
-        <h5 class="card-title">The book you are looking for is not found</h5>
+        <h5 class="card-title">{{ err_message }}</h5>
     </div>
 </div>
 {% endif %}
-
-
 
 {% endblock %}

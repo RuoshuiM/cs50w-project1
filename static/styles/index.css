@@ -53,7 +53,7 @@ main {
   /* scroll horizontally as needed */
   overflow-x: auto;
   /* center contents */
-  text-align: left;
+  text-align: center;
 }
 
 main img {

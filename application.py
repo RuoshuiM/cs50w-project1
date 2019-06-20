@@ -47,17 +47,19 @@ API_KEY = os.getenv("GOODREADS_KEY")
 #     return response
 
 @app.context_processor
-def redirect_processor():
-    return dict(redirect_url=redirect_url)
+def helper_processor():
+    return dict(redirect_url=redirect_url, logged_in=logged_in)
 
 @app.add_template_filter
 def trim(text, max_len):
-    print(text, max_len)
     if len(text) > max_len:
         return f"{text[:max_len]} ..."
     else:
         return text
 
+@app.add_template_filter
+def num(val):
+    return f"{val:.2f}"
 
 @app.route("/")
 def index():
@@ -78,7 +80,6 @@ def login():
         # On POST, try to log user in
 
         err, msg = False, ""
-        print("next", request.args.get("next"))
 
         try:
             username = request.form.get("username")
@@ -113,9 +114,6 @@ def login():
         else:
             session['user_id'] = user_id
             session['username'] = username
-            # print("redirect", redirect_url())
-            # print("next:", request.args.get("next"))
-            # print("request.full_path", request.full_path)
             return redirect(redirect_url() or url_for('index'))
 
     else:
@@ -256,15 +254,21 @@ def register():
 
 @app.route("/book/<int:id>")
 def book(id):
+    """"View for a particular book"""
 
     result = db.execute("SELECT title, author, isbn, year FROM books WHERE id=:id", {'id': id})
 
     if result.rowcount == 0:
-        return render_template("book.html", message="Book not found"), 404
+        return render_template("book.html", err_message="The book you are looking for is not found", error=True), 404
     else:
         book_items = result.fetchone().items()
     
     book = {key: val for key, val in book_items}
+    book['id'] = id
+
+    (book['average_rating'],) = db.execute("SELECT AVG(rating) FROM reviews WHERE book_id=:book_id", {
+        'book_id': id
+    }).fetchone()
 
     res = requests.get("https://www.goodreads.com/book/review_counts.json",
                       params={"key": API_KEY, "isbns": book['isbn']})
@@ -277,8 +281,66 @@ def book(id):
             'num_ratings': good_reads_data.get('work_ratings_count'),
             'average_rating': good_reads_data.get('average_rating')
         }
-    return render_template("book.html", book=book, data=data)
 
+    # Get this particular user's review for the book
+    if logged_in():
+        user_result = db.execute("SELECT rating, text FROM reviews WHERE book_id=:book_id AND user_id=:user_id", {
+            'book_id': id,
+            'user_id': session['user_id']
+        })
+        if user_result.rowcount == 0:
+            user_data = None
+        else:
+            user_data = {key: val for key, val in user_result.fetchone().items()}
+            user_data['username'] = session['username']
+
+        # Get everyone's rating and review
+        all_reviews = db.execute("SELECT username, rating, text FROM reviews JOIN users ON reviews.user_id=users.id WHERE book_id=:book_id AND (NOT user_id=:user_id)", {
+                'book_id': id,
+                'user_id': session['user_id']
+        }).fetchall()
+    else:
+        user_data = None
+        all_reviews = db.execute("SELECT username, rating, text FROM reviews JOIN users ON reviews.user_id=users.id WHERE book_id=:book_id", {
+                'book_id': id
+        }).fetchall()
+    return render_template("book.html", book=book, data=data, user_data=user_data, reviews=all_reviews)
+
+@app.route('/add_review', methods=["POST"])
+def add_review():
+    try:
+        book_id = request.form.get("book_id")
+        rating = request.form.get("rating")
+        review = request.form.get("review")
+    except:
+        flash("Error submitting review")
+        return redirect(url_for('book'), id=book_id)
+
+    if review is None or rating is None:
+        flash("Please fill out a rating and a review")
+        return redirect(url_for('book'), id=book_id)
+
+    if db.execute("SELECT * FROM reviews WHERE user_id=:user_id AND book_id=:book_id", {
+        'book_id': book_id,
+        'user_id': session['user_id']
+        }).rowcount == 0:
+        # No user review yet, add new one
+        db.execute("INSERT INTO reviews (book_id, user_id, rating, text) VALUES (:book_id, :user_id, :rating, :text)", {
+            'book_id': book_id,
+            'user_id': session['user_id'],
+            'rating': rating,
+            'text': review
+        })
+    else:
+        # review already exists, override old one
+        db.execute("UPDATE reviews SET rating=:rating, text=:text WHERE book_id=:book_id AND user_id=:user_id", {
+            'book_id': book_id,
+            'user_id': session['user_id'],
+            'rating': rating,
+            'text': review
+        })
+    db.commit()
+    return redirect(url_for('book', id=book_id))
 
 @app.route("/search")
 def search():
@@ -304,9 +366,6 @@ def search():
         results.update(Search.by_title(db, query))
         results.update(Search.by_author(db, query))
         results.update(Search.by_isbn(db, query))
-        # print(Search.by_title(db, query))
-        # print(Search.by_author(db, query))
-        # print(Search.by_isbn(db, query))
     else:
         if by_title:
             results.update(Search.by_title(db, query))
@@ -315,7 +374,6 @@ def search():
         if by_isbn:
             results.update(Search.by_isbn(db, query))
 
-    # print(results)
     return render_template('search.html', books=results, query=query, methods=search_methods, num_results=len(results))
 
 # # tesing api
