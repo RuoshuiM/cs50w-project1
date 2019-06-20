@@ -1,1 +1,39 @@
 <!-- Displays information for a single book -->
+{% extends "layout_func.html" %}
+
+{% block main %}
+{% if book %}
+
+<div class="card-deck">
+    <div class="card border-0">
+        <div class="card-body">
+            <h1 class="card-title">{{ book.title }}</h1>
+            <h5 class="card-text my-3">By: {{ book.author }}</h5>
+            <h5 class="card-text my-3">ISBN: {{ book.isbn }}</h5>
+            <h5 class="card-text my-3">Published in {{ book.year }}</h5>
+        </div>
+    </div>
+    <div class="card border-0">
+        <div class="card-body">
+            <h3 class="card-title mt-5">Goodreads Data</h3>
+            
+            {% if data %}
+                <h5 class="card-text my-3">{{ data.num_ratings }} ratings received</h5>
+                <h5 class="card-text my-3">Average rating: {{ data.average_rating }} out of 5</h5>        
+            {% else %}
+                <h4 class="card-text">No Goodreads data are found</h4>
+            {% endif %}
+            
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card border-0 text-left">
+    <div class="card-body">
+        <h5 class="card-title">The book you are looking for is not found</h5>
+    </div>
+</div>
+{% endif %}
+
+
+{% endblock %}

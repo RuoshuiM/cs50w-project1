@@ -2,14 +2,14 @@ import json
 import os
 
 import requests
-from flask import (Flask, flash, redirect, render_template, request, session,
-                   url_for, jsonify)
+from flask import (Flask, flash, jsonify, redirect, render_template, request,
+                   session, url_for)
 from flask_session import Session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from helper import logged_in, login_required, redirect_url, Search
+from helper import Search, logged_in, login_required, redirect_url
 
 # env FLASK_APP=application.py FLASK_ENV=development FLASK_DEBUG=1 DATABASE_URL=postgres://jgiduehaaiifrf:c8f46939b0036d5279517bd6e058b003814d303246b41a14eab3b0a066331453@ec2-50-19-127-115.compute-1.amazonaws.com:5432/d4jthl04loj6n1 flask run
 # Local database: postgresql://postgres:postgres@localhost:5432/project1
@@ -20,6 +20,8 @@ app = Flask(__name__)
 # Check for environment variable
 if not os.getenv("DATABASE_URL"):
     raise RuntimeError("DATABASE_URL is not set")
+if not os.getenv("GOODREADS_KEY"):
+    raise RuntimeError("GOODREADS_KEY is not set")
 
 # Configure session to use filesystem
 app.config["SESSION_PERMANENT"] = False
@@ -28,27 +30,21 @@ Session(app)
 
 # Set up database
 engine = create_engine(os.getenv("DATABASE_URL"))
-# engine = create_engine("postgres://jgiduehaaiifrf:c8f46939b0036d5279517bd6e058b003814d303246b41a14eab3b0a066331453@ec2-50-19-127-115.compute-1.amazonaws.com:5432/d4jthl04loj6n1")
 db = scoped_session(sessionmaker(bind=engine))
 
-# Goodread api: key: jQeENaVIOL2SRBFQ9ZQgw
-#               secret: A9nAVGwuyH0tVhGEs4DhShfPwe2UR30tvHXwuEODIVY
+# Set up Goodreads API KEY
 
 # My Goodreads API key
-API_KEY = "jQeENaVIOL2SRBFQ9ZQgw"
+API_KEY = os.getenv("GOODREADS_KEY")
+
 
 #  Only for dev mode backend: disable browser cache
-@app.context_processor
-def override_url_for():
-    return dict(url_for=dated_url_for)
-def dated_url_for(endpoint, **values):
-    if endpoint == 'static':
-        filename = values.get('filename', None)
-        if filename:
-            file_path = os.path.join(app.root_path,
-                                     endpoint, filename)
-            values['q'] = int(os.stat(file_path).st_mtime)
-    return url_for(endpoint, **values)
+# @app.after_request
+# def after_request(response):
+#     response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+#     response.headers["Expires"] = 0
+#     response.headers["Pragma"] = "no-cache"
+#     return response
 
 @app.context_processor
 def redirect_processor():
@@ -260,7 +256,30 @@ def register():
 
 @app.route("/book/<int:id>")
 def book(id):
-    return "TODO"
+
+    result = db.execute("SELECT title, author, isbn, year FROM books WHERE id=:id", {'id': id})
+
+    if result.rowcount == 0:
+        return render_template("book.html", message="Book not found"), 404
+    else:
+        book_items = result.fetchone().items()
+    
+    book = {key: val for key, val in book_items}
+
+    res = requests.get("https://www.goodreads.com/book/review_counts.json",
+                      params={"key": API_KEY, "isbns": book['isbn']})
+    
+    if res.status_code == 404 or res.status_code == 422:
+        data = None
+    else:
+        good_reads_data = json.loads(res.text)['books'][0]
+        data = {
+            'num_ratings': good_reads_data.get('work_ratings_count'),
+            'average_rating': good_reads_data.get('average_rating')
+        }
+        print(good_reads_data)
+        print(data)
+    return render_template("book.html", book=book, data=data)
 
 
 @app.route("/search")
@@ -299,7 +318,7 @@ def search():
             results.update(Search.by_isbn(db, query) or {})
 
     # print(results)
-    return render_template('search.html', books=results, query=query, methods=search_methods)
+    return render_template('search.html', books=results, query=query, methods=search_methods, num_results=len(results))
 
 # # tesing api
 # @app.route("/api")

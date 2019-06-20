@@ -2,17 +2,23 @@
 
 {% block main %}
 <div class="search">
-
+    <small class="text-muted">
+        {% if num_results == 1 %}
+        1 result
+        {% elif not num_results == 0 %}
+        {{ num_results }} results
+        {% endif %}
+    </small>
     {% for id, isbn, title, author, year in books %}
     <div class="card border-0">
-        <a href="{{ url_for('book', id=id) }}" class="card-link">
-            <div class="card-body">
+        <div class="card-body">
+            <a href="{{ url_for('book', id=id) }}" class="card-link">
                 <h5 class="card-title">{{ title }}</h5>
-                <h6 class="card-subtitle mb-2 text-muted">{{ author }}, {{ year }}</h6>
-                <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
+            </a>
+            <h6 class="card-subtitle mb-2 text-muted">{{ author }}, {{ year }}, ISBN: {{ isbn }}</h6>
+            <!-- <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
                                     content.</p> -->
-            </div>
-        </a>
+        </div>
     </div>
     {% else %}
     <div class="card border-0">

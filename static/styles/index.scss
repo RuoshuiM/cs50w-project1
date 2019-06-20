@@ -66,7 +66,7 @@ main {
     overflow-x: auto;
 
     /* center contents */
-    text-align: center;
+    text-align: left;
 
     img {
         /* constrain images on small screens */
@@ -90,6 +90,7 @@ form {
 .search {
     text-align: left;
 }
+
 
 // Attempts to put search icon inside bar; doesn't work
 // https://stackoverflow.com/a/11589805
