@@ -411,34 +411,32 @@ def book_info(isbn):
     }
 
     """
-
-    error_msg = "No book with given isbn is found"
-
     result = db.execute(
-        """SELECT isbn, title, author, year FROM books WHERE isbn = :isbn""", {"isbn": str(isbn)})
+        """SELECT id, title, author, year FROM books WHERE isbn = :isbn""", {"isbn": str(isbn)})
 
-    my_book = result.fetchone()
+    if result.rowcount == 0:
+        return "No book with given isbn is found", 404
 
-    if my_book is None:
-        return error_msg, 404
+    id, title, author, year = result.fetchone()
 
-    res = requests.get("https://www.goodreads.com/book/review_counts.json", params={
-                       "key": API_KEY, "isbns": isbn})
+    review = db.execute("SELECT COUNT(*), AVG(rating) from reviews WHERE book_id=:book_id", {
+        'book_id': id
+    })
 
-    if res.status_code == 404 or res.status_code == 422:
-        return jsonify({"error": error_msg}), 404
+    count, score = review.fetchone()
 
-    json_data = json.loads(res.text)
-
-    book = json_data["books"][0]
+    if score:
+        score = float(f"{score:.2f}")
+    else:
+        score = "N/A"
 
     return jsonify ({
-        "title": my_book["title"],
-        "author": my_book["author"],
-        "isbn": my_book["isbn"],
-        "year": my_book["year"],
-        "review_count": book["reviews_count"],
-        "average_score": float(book["average_rating"])
+        "title": title,
+        "author": author,
+        "isbn": isbn,
+        "year": year,
+        "review_count": count,
+        "average_score": score
     })
 
 # def errorhandler(e):
