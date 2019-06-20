@@ -46,7 +46,7 @@
     <footer class="footer mt-auto bg-light py-3 w-100">
         <div class="container">
             <div class="row mx-auto">
-                <a href="{{ url_for('help', next= (request.full_url or url_for('index'))) }}"
+                <a href="{{ url_for('help', next=request.full_path) }}"
                     class="text-muted">Help</a>
             </div>
         </div>
