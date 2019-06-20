@@ -11,7 +11,6 @@ Web Programming with Python and JavaScript
 - split search into multiple pages (Using SQL LIMIT and OFFSET, perhaps), since I don't want ajax at this point (or maybe that's a good option, who knows!)
 
 ### Frontend
-- add footer
 - use bootstrap for nicer form validation messages
 - use js to ensure more careful deletion (like typing in username to confirm)
 
@@ -39,16 +38,18 @@ Web Programming with Python and JavaScript
     - ability to add/modify reviews
 - calculate ratings
 - make api
+- add footer
 
 
 ### Be careful about (Which I spent hours debugging):
 - Commit! Commit! Commit! Commit everytime modifying database (INSERT, UPDATE, DELETE)
 - Update Bootstrap! (So dropdown-menu-right and custom_forms work!)
+- DO NOT use outdated approach to make footer stick to bottom. [Use this](https://getbootstrap.com/docs/4.3/examples/sticky-footer/).
 
 ### Problems that still exist:
 - Needs Improvements:
     - Search category selection 
-        - Keep area expanded if the user has done so
+        - Keep search selection area expanded if the user has done so
         - Use cookies to remember selection
 
 - Styling:

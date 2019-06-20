@@ -307,6 +307,7 @@ def book(id):
     return render_template("book.html", book=book, data=data, user_data=user_data, reviews=all_reviews)
 
 @app.route('/add_review', methods=["POST"])
+@login_required
 def add_review():
     try:
         book_id = request.form.get("book_id")
