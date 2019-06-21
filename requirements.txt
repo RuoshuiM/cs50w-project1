@@ -4,3 +4,6 @@ psycopg2
 SQLAlchemy
 orderedset
 gunicorn
+requests
+json
+werkzeug
