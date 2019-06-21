@@ -1,6 +1,6 @@
-gunicorn
 Flask
 Flask-Session
 psycopg2
 SQLAlchemy
 orderedset
+gunicorn
