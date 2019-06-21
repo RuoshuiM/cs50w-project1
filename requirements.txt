@@ -5,5 +5,4 @@ SQLAlchemy
 orderedset
 gunicorn
 requests
-json
 werkzeug
